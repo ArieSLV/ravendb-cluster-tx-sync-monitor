@@ -53,7 +53,8 @@ _ = Task.Run(async () =>
 });
 
 // 2. The HTTP endpoint for the monitoring system: 200 when in sync, 503 otherwise.
-var builder = WebApplication.CreateBuilder();
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions { ContentRootPath = AppContext.BaseDirectory });
+builder.Host.UseWindowsService(options => options.ServiceName = "ClusterTxSyncMonitor");
 builder.Logging.ClearProviders();
 builder.WebHost.UseUrls(config.ListenUrl);
 var app = builder.Build();

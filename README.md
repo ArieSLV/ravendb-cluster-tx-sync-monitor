@@ -23,8 +23,16 @@ It only reads: it sends `GET` requests to the nodes and changes nothing on the c
 
 4. Point the monitoring system at the `ListenUrl`, for example `http://localhost:5080/`.
 
-To keep it running, register it as a Windows service (for example with `sc.exe create`), a scheduled task
-that starts at boot, or a systemd unit on Linux.
+To keep it running on Windows, register the same executable as a service (in an elevated command prompt; the
+space after each `=` is required):
+
+```
+sc.exe create ClusterTxSyncMonitor binPath= "C:\ClusterTxSyncMonitor\ClusterTxSyncMonitor.exe" start= delayed-auto
+sc.exe failure ClusterTxSyncMonitor reset= 86400 actions= restart/60000
+sc.exe start ClusterTxSyncMonitor
+```
+
+On Linux, run it as a systemd unit.
 
 ## How it works
 
@@ -117,3 +125,7 @@ dotnet publish ClusterTxSyncMonitor.csproj -c Release -r win-x64 --self-containe
 
 Use `-r linux-x64` for Linux. Pushing a tag such as `v1.0.1` builds both packages and publishes them as a
 release (`.github/workflows/build.yml`).
+
+## License
+
+MIT, see [LICENSE](LICENSE).
