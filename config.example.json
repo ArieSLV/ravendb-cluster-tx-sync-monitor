@@ -1,0 +1,28 @@
+{
+  // Copy this file to config.json next to the executable and fill it in.
+
+  // Every node of the cluster. Name is only used in the output.
+  "Nodes": [
+    { "Name": "A", "Url": "https://a.example.com" },
+    { "Name": "B", "Url": "https://b.example.com" },
+    { "Name": "C", "Url": "https://c.example.com" }
+  ],
+
+  // Client certificate (.pfx) with at least Operator access to the cluster.
+  "ClientCertificatePath": "C:\\monitor\\operator.pfx",
+  "ClientCertificatePassword": "",
+
+  // Only for test clusters with a self-signed server certificate. Keep false in production.
+  "TrustServerCertificate": false,
+
+  "IntervalSeconds": 60,
+  "RequestTimeoutSeconds": 60,
+
+  // Where the status endpoint listens. http://localhost:5080 is reachable only from this machine.
+  "ListenUrl": "http://localhost:5080",
+
+  // Optional: readable names for database ids in the output (id from the RAFT: entry of a change vector).
+  "DatabaseNames": {
+    "AAAAAAAAAAAAAAAAAAAAAA": "Orders"
+  }
+}

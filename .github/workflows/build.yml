@@ -1,0 +1,46 @@
+name: Build
+
+# Every push and pull request: build both packages.
+# A tag such as v1.0.0: build both packages and publish them as a GitHub release.
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish self-contained single-file packages
+        run: |
+          VERSION="${GITHUB_REF_NAME//\//-}"
+          for RID in win-x64 linux-x64; do
+            dotnet publish ClusterTxSyncMonitor.csproj -c Release -r "$RID" --self-contained \
+              -p:PublishSingleFile=true -p:DebugType=None -o "out/$RID"
+            cp config.example.json README.md "out/$RID/"
+            (cd "out/$RID" && zip -r "../../ClusterTxSyncMonitor-$VERSION-$RID.zip" .)
+          done
+          ls -l *.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: '*.zip'
+
+      - name: Create the release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" *.zip --title "$GITHUB_REF_NAME" --generate-notes

@@ -1,0 +1,4 @@
+config.json
+*.pfx
+bin/
+obj/
